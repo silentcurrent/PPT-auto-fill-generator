@@ -16,6 +16,7 @@ POST:
   FormData with 'template' (PPTX) and 'excel' (XLSX) files
 """
 
+import json
 import os
 import re
 import uuid
@@ -59,68 +60,57 @@ def detect_placeholders(prs: Presentation) -> list[str]:
     return sorted(placeholders)
 
 
-# Mapping: PPT placeholder -> Excel column
-MAPPING = {
-    "[candidate_name]": "candidate_name",
-    "[Name]": "candidate_name",
-    "[positioning_blurb]": "positioning_blurb",
-    "[deep_ai_experience_1]": "deep_ai_experience_1",
-    "[deep_ai_experience_2]": "deep_ai_experience_2",
-    "[deep_ai_experience_3]": "deep_ai_experience_3",
-    "[deep_ai_experience_4]": "deep_ai_experience_4",
-    "[key_experience_1]": "key_experience_1",
-    "[key_experience_2]": "key_experience_2",
-    "[key_experience_3]": "key_experience_3",
-    "[key_experience_4]": "key_experience_4",
-    "[quality_1_title]": "quality_1_title",
-    "[quality_2_title]": "quality_2_title",
-    "[quality_3_title]": "quality_3_title",
-    "[quality_1_description]": "quality_1_description",
-    "[quality_2_description]": "quality_2_description",
-    "[quality_3_description]": "quality_3_description",
-    "[backend_1]": "backend_1",
-    "[backend_2]": "backend_2",
-    "[backend_3]": "backend_3",
-    "[backend_4]": "backend_4",
-    "[backend_5]": "backend_5",
-    "[backend_6]": "backend_6",
-    "[full-stack_1]": "full-stack_1",
-    "[full-stack_2]": "full-stack_2",
-    "[full-stack_3]": "full-stack_3",
-    "[full-stack_4]": "full-stack_4",
-    "[full-stack_5]": "full-stack_5",
-    "[full-stack_6]": "full-stack_6",
-    "[ai_1]": "ai_1",
-    "[ai_2]": "ai_2",
-    "[ai_3]": "ai_3",
-    "[ai_4]": "ai_4",
-    "[ai_5]": "ai_5",
-    "[ai_6]": "ai_6",
-    "[project_1_name]": "project_1_name",
-    "[project_1_context]": "project_1_context",
-    "[project_2_name]": "project_2_name",
-    "[project_2_context]": "project_2_context",
-    "[project_3_name]": "project_3_name",
-    "[project_3_context]": "project_3_context",
-    "[project_4_name]": "project_4_name",
-    "[project_4_context]": "project_4_context",
-    "[project_impact_1]": "project_1_business_impact",
-    "[project_1_business_impact]": "project_1_business_impact",
-    "[project_impact_2]": "project_2_business_impact",
-    "[project_2_business_impact]": "project_2_business_impact",
-    "[Project 1]": "project_1_name",
-    "[Description_p1]": "project_1_context",
-    "[Project 2]": "project_2_name",
-    "[Description_p2]": "project_2_context",
-    "[industry_1]": "industry_1",
-    "[industry_1_impact]": "industry_1_impact",
-    "[industry_2]": "industry_2",
-    "[industry_2_impact]": "industry_2_impact",
-    "[industry_3]": "industry_3",
-    "[industry_3_impact]": "industry_3_impact",
-    "[industry_4]": "industry_4",
-    "[industry_4_impact]": "industry_4_impact",
-}
+# ---------- Mapping config (editable via UI) ----------
+MAPPING_CONFIG_PATH = Path(__file__).parent / "mapping_config.json"
+
+# Default mappings used when config file does not exist
+_DEFAULT_MAPPINGS = [
+    {"pptPlaceholder": "[candidate_name]", "excelColumn": "candidate_name"},
+    {"pptPlaceholder": "[Name]", "excelColumn": "candidate_name"},
+    {"pptPlaceholder": "[positioning_blurb]", "excelColumn": "positioning_blurb"},
+    {"pptPlaceholder": "[project_1_name]", "excelColumn": "project_1_name"},
+    {"pptPlaceholder": "[project_1_context]", "excelColumn": "project_1_context"},
+    {"pptPlaceholder": "[project_2_name]", "excelColumn": "project_2_name"},
+    {"pptPlaceholder": "[project_2_context]", "excelColumn": "project_2_context"},
+]
+
+
+def load_mapping_config() -> list:
+    """Load mapping config from JSON file. Creates default if missing."""
+    if MAPPING_CONFIG_PATH.exists():
+        with open(MAPPING_CONFIG_PATH, "r", encoding="utf-8") as f:
+            data = json.load(f)
+            return data.get("mappings", [])
+    save_mapping_config(_DEFAULT_MAPPINGS)
+    return _DEFAULT_MAPPINGS
+
+
+def save_mapping_config(mappings: list[dict]) -> None:
+    """Save mapping config to JSON file."""
+    with open(MAPPING_CONFIG_PATH, "w", encoding="utf-8") as f:
+        json.dump({"mappings": mappings}, f, indent=2)
+
+
+def get_full_mapping(row: pd.Series) -> dict[str, str]:
+    """
+    Build full placeholder -> Excel column mapping.
+    - Config mappings (from UI) take precedence.
+    - Auto name-matching: for each Excel column X, add [X] -> X if not already mapped.
+    - So [column_name] in PPT matches column "column_name" in Excel when names are consistent.
+    """
+    config = load_mapping_config()
+    mapping: dict[str, str] = {}
+    for item in config:
+        ph = item.get("pptPlaceholder", "")
+        col = item.get("excelColumn", "")
+        if ph and col:
+            mapping[ph] = col
+    # Auto-add [column_name] -> column_name for Excel columns not yet mapped
+    for col in row.index:
+        placeholder = f"[{col}]"
+        if placeholder not in mapping:
+            mapping[placeholder] = col
+    return mapping
 
 # ---------- Helpers ----------
 def _normalize(s: str) -> str:
@@ -141,13 +131,15 @@ def select_row(df: pd.DataFrame, row_index: int = 0) -> pd.Series:
 def build_replacements(row: pd.Series) -> dict[str, str]:
     """Build replacement dict using the mapping.
 
+    - Uses config mapping + auto name-matching (PPT [X] -> Excel column X).
     - Normal values are normalized.
     - Empty/missing values are replaced with a red warning text like:
       'No quality_1_title field in excel'.
     """
     replacements: dict[str, str] = {}
-    
-    for placeholder, col in MAPPING.items():
+    mapping = get_full_mapping(row)
+
+    for placeholder, col in mapping.items():
         field_name = placeholder.strip("[]")
         if col in row.index:
             val = row[col]
@@ -411,6 +403,29 @@ CORS(app)
 @app.get("/health")
 def health():
     return jsonify({"ok": True})
+
+
+@app.get("/mapping")
+def get_mapping():
+    """Return current placeholder -> Excel column mappings."""
+    mappings = load_mapping_config()
+    return jsonify({"mappings": mappings})
+
+
+@app.put("/mapping")
+def put_mapping():
+    """Save placeholder -> Excel column mappings."""
+    try:
+        data = request.get_json()
+        if not data or "mappings" not in data:
+            return jsonify({"error": "Missing 'mappings' in request body"}), 400
+        mappings = data["mappings"]
+        if not isinstance(mappings, list):
+            return jsonify({"error": "'mappings' must be an array"}), 400
+        save_mapping_config(mappings)
+        return jsonify({"ok": True, "mappings": mappings})
+    except Exception as e:
+        return jsonify({"error": str(e)}), 500
 
 @app.post("/generate")
 def generate():

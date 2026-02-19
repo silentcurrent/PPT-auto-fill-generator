@@ -1,0 +1,51 @@
+@echo off
+title PPT Tool - First Time Setup
+
+cd /d "%~dp0"
+
+echo ========================================
+echo Setting up PPT Generation Tool...
+echo ========================================
+
+REM ===============================
+REM BACKEND SETUP
+REM ===============================
+
+echo.
+echo Setting up Backend...
+
+cd backend
+
+REM Create virtual environment if missing
+if not exist .venv (
+    echo Creating virtual environment...
+    python -m venv .venv
+)
+
+call .venv\Scripts\activate
+
+REM Install dependencies
+if exist requirements.txt (
+    pip install -r requirements.txt
+) else (
+    pip install fastapi uvicorn pandas python-pptx openpyxl
+)
+
+cd ..
+
+REM ===============================
+REM FRONTEND SETUP
+REM ===============================
+
+echo.
+echo Setting up Frontend...
+
+npm install
+
+echo.
+echo ========================================
+echo Setup Complete.
+echo Now run: run.bat
+echo ========================================
+
+pause

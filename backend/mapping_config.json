@@ -1,0 +1,248 @@
+{
+  "mappings": [
+    {
+      "excelColumn": "candidate_name",
+      "pptPlaceholder": "[candidate_name]"
+    },
+    {
+      "excelColumn": "candidate_name",
+      "pptPlaceholder": "[Name]"
+    },
+    {
+      "excelColumn": "positioning_blurb",
+      "pptPlaceholder": "[positioning_blurb]"
+    },
+    {
+      "excelColumn": "deep_ai_experience_1",
+      "pptPlaceholder": "[deep_ai_experience_1]"
+    },
+    {
+      "excelColumn": "deep_ai_experience_2",
+      "pptPlaceholder": "[deep_ai_experience_2]"
+    },
+    {
+      "excelColumn": "deep_ai_experience_3",
+      "pptPlaceholder": "[deep_ai_experience_3]"
+    },
+    {
+      "excelColumn": "deep_ai_experience_4",
+      "pptPlaceholder": "[deep_ai_experience_4]"
+    },
+    {
+      "excelColumn": "key_experience_1",
+      "pptPlaceholder": "[key_experience_1]"
+    },
+    {
+      "excelColumn": "key_experience_2",
+      "pptPlaceholder": "[key_experience_2]"
+    },
+    {
+      "excelColumn": "key_experience_3",
+      "pptPlaceholder": "[key_experience_3]"
+    },
+    {
+      "excelColumn": "key_experience_4",
+      "pptPlaceholder": "[key_experience_4]"
+    },
+    {
+      "excelColumn": "quality_1_title",
+      "pptPlaceholder": "[quality_1_title]"
+    },
+    {
+      "excelColumn": "quality_2_title",
+      "pptPlaceholder": "[quality_2_title]"
+    },
+    {
+      "excelColumn": "quality_3_title",
+      "pptPlaceholder": "[quality_3_title]"
+    },
+    {
+      "excelColumn": "quality_1_description",
+      "pptPlaceholder": "[quality_1_description]"
+    },
+    {
+      "excelColumn": "quality_2_description",
+      "pptPlaceholder": "[quality_2_description]"
+    },
+    {
+      "excelColumn": "quality_3_description",
+      "pptPlaceholder": "[quality_3_description]"
+    },
+    {
+      "excelColumn": "backend_1",
+      "pptPlaceholder": "[backend_1]"
+    },
+    {
+      "excelColumn": "backend_2",
+      "pptPlaceholder": "[backend_2]"
+    },
+    {
+      "excelColumn": "backend_3",
+      "pptPlaceholder": "[backend_3]"
+    },
+    {
+      "excelColumn": "backend_4",
+      "pptPlaceholder": "[backend_4]"
+    },
+    {
+      "excelColumn": "backend_5",
+      "pptPlaceholder": "[backend_5]"
+    },
+    {
+      "excelColumn": "backend_6",
+      "pptPlaceholder": "[backend_6]"
+    },
+    {
+      "excelColumn": "full-stack_1",
+      "pptPlaceholder": "[full-stack_1]"
+    },
+    {
+      "excelColumn": "full-stack_2",
+      "pptPlaceholder": "[full-stack_2]"
+    },
+    {
+      "excelColumn": "full-stack_3",
+      "pptPlaceholder": "[full-stack_3]"
+    },
+    {
+      "excelColumn": "full-stack_4",
+      "pptPlaceholder": "[full-stack_4]"
+    },
+    {
+      "excelColumn": "full-stack_5",
+      "pptPlaceholder": "[full-stack_5]"
+    },
+    {
+      "excelColumn": "full-stack_6",
+      "pptPlaceholder": "[full-stack_6]"
+    },
+    {
+      "excelColumn": "ai_1",
+      "pptPlaceholder": "[ai_1]"
+    },
+    {
+      "excelColumn": "ai_2",
+      "pptPlaceholder": "[ai_2]"
+    },
+    {
+      "excelColumn": "ai_3",
+      "pptPlaceholder": "[ai_3]"
+    },
+    {
+      "excelColumn": "ai_4",
+      "pptPlaceholder": "[ai_4]"
+    },
+    {
+      "excelColumn": "ai_5",
+      "pptPlaceholder": "[ai_5]"
+    },
+    {
+      "excelColumn": "ai_6",
+      "pptPlaceholder": "[ai_6]"
+    },
+    {
+      "excelColumn": "project_1_name",
+      "pptPlaceholder": "[project_1_name]"
+    },
+    {
+      "excelColumn": "project_1_context",
+      "pptPlaceholder": "[project_1_context]"
+    },
+    {
+      "excelColumn": "project_2_name",
+      "pptPlaceholder": "[project_2_name]"
+    },
+    {
+      "excelColumn": "project_2_context",
+      "pptPlaceholder": "[project_2_context]"
+    },
+    {
+      "excelColumn": "project_3_name",
+      "pptPlaceholder": "[project_3_name]"
+    },
+    {
+      "excelColumn": "project_3_context",
+      "pptPlaceholder": "[project_3_context]"
+    },
+    {
+      "excelColumn": "project_4_name",
+      "pptPlaceholder": "[project_4_name]"
+    },
+    {
+      "excelColumn": "project_4_context",
+      "pptPlaceholder": "[project_4_context]"
+    },
+    {
+      "excelColumn": "project_1_business_impact",
+      "pptPlaceholder": "[project_impact_1]"
+    },
+    {
+      "excelColumn": "project_1_business_impact",
+      "pptPlaceholder": "[project_1_business_impact]"
+    },
+    {
+      "excelColumn": "project_2_business_impact",
+      "pptPlaceholder": "[project_impact_2]"
+    },
+    {
+      "excelColumn": "project_2_business_impact",
+      "pptPlaceholder": "[project_2_business_impact]"
+    },
+    {
+      "excelColumn": "project_1_name",
+      "pptPlaceholder": "[Project 1]"
+    },
+    {
+      "excelColumn": "project_1_context",
+      "pptPlaceholder": "[Description_p1]"
+    },
+    {
+      "excelColumn": "project_2_name",
+      "pptPlaceholder": "[Project 2]"
+    },
+    {
+      "excelColumn": "project_2_context",
+      "pptPlaceholder": "[Description_p2]"
+    },
+    {
+      "excelColumn": "industry_1",
+      "pptPlaceholder": "[industry_1]"
+    },
+    {
+      "excelColumn": "industry_1_impact",
+      "pptPlaceholder": "[industry_1_impact]"
+    },
+    {
+      "excelColumn": "industry_2",
+      "pptPlaceholder": "[industry_2]"
+    },
+    {
+      "excelColumn": "industry_2_impact",
+      "pptPlaceholder": "[industry_2_impact]"
+    },
+    {
+      "excelColumn": "industry_3",
+      "pptPlaceholder": "[industry_3]"
+    },
+    {
+      "excelColumn": "industry_3_impact",
+      "pptPlaceholder": "[industry_3_impact]"
+    },
+    {
+      "excelColumn": "industry_4",
+      "pptPlaceholder": "[industry_4]"
+    },
+    {
+      "excelColumn": "industry_4_impact",
+      "pptPlaceholder": "[industry_4_impact]"
+    },
+    {
+      "excelColumn": "New_test",
+      "pptPlaceholder": "[New_test]"
+    },
+    {
+      "pptPlaceholder": "[New_test]1",
+      "excelColumn": "New_test1"
+    }
+  ]
+}
