@@ -501,6 +501,12 @@ def generate():
 
 
 if __name__ == "__main__":
-    print(f"[Backend] Starting server on port 8000")
+    port = int(os.environ.get("PORT", 8000))
+
+    print(f"[Backend] Starting server on port {port}")
     print(f"[Backend] Temp directory: {TEMP_DIR}")
-    app.run(host="0.0.0.0", port=8000, debug=True)
+
+    # Debug only when running locally
+    debug_mode = os.environ.get("RENDER") is None
+
+    app.run(host="0.0.0.0", port=port, debug=debug_mode)
