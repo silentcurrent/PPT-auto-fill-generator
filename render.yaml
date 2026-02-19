@@ -1,0 +1,36 @@
+# Render Blueprint - Deploy PPT Generation Tool
+# Add PostgreSQL + Backend; Frontend needs BACKEND_URL pointing to backend service
+
+databases:
+  - name: ppt-mappings-db
+    databaseName: ppt_mappings
+    plan: free
+
+services:
+  # Python backend (Flask)
+  - type: web
+    name: ppt-backend
+    runtime: python
+    region: oregon
+    plan: free
+    rootDir: backend
+    buildCommand: pip install -r requirements.txt
+    startCommand: gunicorn main:app --bind 0.0.0.0:$PORT
+    envVars:
+      - key: DATABASE_URL
+        fromDatabase:
+          name: ppt-mappings-db
+          property: connectionString
+
+  # Next.js frontend
+  - type: web
+    name: ppt-frontend
+    runtime: node
+    region: oregon
+    plan: free
+    buildCommand: npm install && npm run build
+    startCommand: npm start
+    envVars:
+      # Point to your backend URL (Render sets this: https://ppt-backend.onrender.com)
+      - key: BACKEND_URL
+        value: https://ppt-backend.onrender.com

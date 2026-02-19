@@ -61,9 +61,10 @@ def detect_placeholders(prs: Presentation) -> list[str]:
 
 
 # ---------- Mapping config (editable via UI) ----------
+# Uses PostgreSQL when DATABASE_URL is set (Render); otherwise JSON file (local)
 MAPPING_CONFIG_PATH = Path(__file__).parent / "mapping_config.json"
 
-# Default mappings used when config file does not exist
+# Default mappings used when no config exists
 _DEFAULT_MAPPINGS = [
     {"pptPlaceholder": "[candidate_name]", "excelColumn": "candidate_name"},
     {"pptPlaceholder": "[Name]", "excelColumn": "candidate_name"},
@@ -76,7 +77,15 @@ _DEFAULT_MAPPINGS = [
 
 
 def load_mapping_config() -> list:
-    """Load mapping config from JSON file. Creates default if missing."""
+    """Load mappings from database (if DATABASE_URL) or JSON file."""
+    import db as db_module
+    db_mappings = db_module.load_mappings_from_db()
+    if db_mappings is not None:
+        if not db_mappings:
+            save_mapping_config(_DEFAULT_MAPPINGS)
+            return _DEFAULT_MAPPINGS
+        return db_mappings
+    # Fallback: JSON file (local dev)
     if MAPPING_CONFIG_PATH.exists():
         with open(MAPPING_CONFIG_PATH, "r", encoding="utf-8") as f:
             data = json.load(f)
@@ -86,7 +95,11 @@ def load_mapping_config() -> list:
 
 
 def save_mapping_config(mappings: list[dict]) -> None:
-    """Save mapping config to JSON file."""
+    """Save mappings to database (if DATABASE_URL) or JSON file."""
+    import db as db_module
+    if db_module.save_mappings_to_db(mappings):
+        return
+    # Fallback: JSON file (local dev)
     with open(MAPPING_CONFIG_PATH, "w", encoding="utf-8") as f:
         json.dump({"mappings": mappings}, f, indent=2)
 
@@ -400,6 +413,15 @@ def apply_replacements_to_ppt(template_file, replacements: dict[str, str]) -> By
 app = Flask(__name__)
 CORS(app)
 
+def _init_db_once():
+    try:
+        import db as db_module
+        db_module.init_db()
+    except Exception as e:
+        print(f"[Backend] DB init skipped: {e}")
+
+_init_db_once()
+
 @app.get("/health")
 def health():
     return jsonify({"ok": True})
@@ -501,12 +523,6 @@ def generate():
 
 
 if __name__ == "__main__":
-    port = int(os.environ.get("PORT", 8000))
-
-    print(f"[Backend] Starting server on port {port}")
+    print(f"[Backend] Starting server on port 8000")
     print(f"[Backend] Temp directory: {TEMP_DIR}")
-
-    # Debug only when running locally
-    debug_mode = os.environ.get("RENDER") is None
-
-    app.run(host="0.0.0.0", port=port, debug=debug_mode)
+    app.run(host="0.0.0.0", port=8000, debug=True)

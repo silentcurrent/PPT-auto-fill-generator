@@ -235,14 +235,6 @@
     {
       "excelColumn": "industry_4_impact",
       "pptPlaceholder": "[industry_4_impact]"
-    },
-    {
-      "excelColumn": "New_test",
-      "pptPlaceholder": "[New_test]"
-    },
-    {
-      "pptPlaceholder": "[New_test]1",
-      "excelColumn": "New_test1"
     }
   ]
 }
